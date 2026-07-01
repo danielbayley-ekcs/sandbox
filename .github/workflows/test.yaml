@@ -1,0 +1,30 @@
+name: Run Tests
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: [main]
+
+jobs:
+  Test:
+    runs-on: ubuntu-latest #aiagent-master
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v7
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version-file: pyproject.toml #.python-version
+
+    - name: Set up uv
+      id: setup-uv
+      uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+      with:
+        enable-cache: true
+
+    - name: Install dependencies
+      run: ${{ steps.setup-uv.outputs.uv-path }} sync --locked --all-extras --dev
+
+    - name: ${{ github.workflow }}
+      run: ${{ steps.setup-uv.outputs.uv-path }} run pytest

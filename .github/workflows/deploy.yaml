@@ -1,0 +1,23 @@
+name: Deploy
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+    - Run Tests
+    branches: [main]
+    types: [completed]
+
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest #aiagent-master
+    if: github.event.workflow_run.conclusion == 'success' #&& github.event_name == 'workflow_dispatch' FIXME
+    steps:
+    - name: Debug
+      run: echo ${{ github.event_name }}
+
+    - name: Checkout code
+      if: github.event_name == 'workflow_dispatch'
+      uses: actions/checkout@v7
+
+    - name: ${{ github.workflow }}
+      run: echo App deployed!
