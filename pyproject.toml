@@ -1,0 +1,65 @@
+[project]
+name = "sandbox"
+version = "0.1.0"
+description = "A sandbox repository for testing."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "python-magic>=0.4.27",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=9.2.0",
+  "pytest-cov>=7.1.0",
+  "ruff>=0.17.5",
+  "taskipy>=1.14.1",
+  "ty>=0.0.104",
+]
+
+# https://github.com/taskipy/taskipy#adding-tasks
+[tool.taskipy.tasks]
+format = "uv run ruff format"
+fmt = "task format"
+lint = "uv run ruff check"
+lint_fix = "task lint --fix"
+fix = "f() { task format $@ && task lint_fix $@; }; f"
+typecheck = "uv run ty check"
+tc = "task typecheck"
+test = "uv run pytest"
+ci = "task lint && task typecheck && task test --cov-report markdown-append:$GITHUB_STEP_SUMMARY"
+clean = "git clean -X --force"
+zap_venv = "rm -rf .venv"
+zap = "task zap_venv && task clean"
+reinstall = "task zap_venv && uv sync --reinstall"
+ri = "task reinstall"
+
+# https://docs.astral.sh/ruff/configuration
+# https://docs.astral.sh/ruff/settings
+[tool.ruff]
+indent-width = 2
+
+# https://docs.pytest.org/en/stable/reference/reference.html#configuration-options
+[tool.pytest]
+testpaths = ["test"]
+python_files = [
+  "test_*.py",
+  "test/**.py",
+]
+pythonpath = ["."]
+addopts = [
+  "--import-mode=importlib",
+  "--cov",
+  "--cov-report=term",
+]
+
+# https://pytest-cov.readthedocs.io/en/latest/config.html
+[tool.coverage]
+report.show_missing = true
+report.fail_under = 100
+run.branch = true
+run.omit = [
+  ".venv/*",
+  "test/*",
+  "test_*.py",
+]
