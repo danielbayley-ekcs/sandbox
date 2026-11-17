@@ -1,0 +1,25 @@
+name: Test
+on:
+  workflow_dispatch:
+  workflow_call:
+  push: &branches
+    branches: [python]
+  pull_request: *branches
+
+jobs:
+  Test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@f548e57e544e1ff5a4c46bf1e1b8685f8e4a348a # v7.0.1
+
+    - name: Set up uv
+      uses: astral-sh/setup-uv@963ce8fe9e4fb39553bd07a010f5e986c4dcff9d # v10.3.3
+      with:
+        enable-cache: true
+
+    - name: Install dependencies
+      run: uv sync --locked
+
+    - name: ${{ github.workflow }}
+      run: uv run task ci
