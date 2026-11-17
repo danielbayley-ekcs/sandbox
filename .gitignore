@@ -1,0 +1,8 @@
+# Python/uv
+*.py[co]
+.venv/
+__pycache__
+.*_cache
+.coverage
+coverage.*
+*cov/
